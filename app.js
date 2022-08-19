@@ -1,7 +1,7 @@
 //Utilities
 const calc = [];
 let display = "";
-let number = 0;
+let decimal = false;
 // selecting elements
 //Numbers
 const numObj = {
@@ -34,6 +34,7 @@ const cl = document.querySelector("#clear");
 const equal = document.querySelector("#equal");
 const del = document.querySelector("#delete");
 const input = document.querySelector("input");
+const dec = document.querySelector("#decimal");
 
 console.log(cl);
 
@@ -50,13 +51,11 @@ for (let i = 0; i <= 9; i++){
         }
         if (i == 0){
             if (calc.length > 0){
-                number = number * 10;
                 display += "0";
                 input.value = display;
                 }
         }
         else {
-            number = number * 10 + i;
             display += i;
             input.value = display;
         }
@@ -66,9 +65,8 @@ for (let i = 0; i <= 9; i++){
 //Operations
 for (let i = 0; i < 5; i++){
     operationObj[operation[i]].addEventListener("click", () => {
-        display = sign[i];
         if (calc.length === 0){
-            calc.push(number);
+            calc.push(parseFloat(display));
             calc.push(sign[i]);
         }
         else if (calc[calc.length - 1] === "/" ||
@@ -79,12 +77,10 @@ for (let i = 0; i < 5; i++){
                                     calc.pop();
                                     calc.push(sign[i]);
         }
-        else{
-            calc.push(num);
-            calc.push(sign[i]);
-        }
-        number = 0;
+        display = sign[i];
+        decimal = false;
         input.value = display;
+        display = "";
     });
 }
 
@@ -95,13 +91,34 @@ cl.addEventListener("click", () => {
         calc.pop();
     }
     input.value = "";
+    decimal = false;
 });
+
+dec.addEventListener("click", () => {
+    if (!decimal){
+        display = display + ".";
+        input.value = display;
+        decimal = true;
+    }
+});
+
+del.addEventListener("click", () => {
+    if (display.length != 0){
+        if (display[display.length - 1] == "."){
+            decimal = false;
+        }
+        display = display.slice(0, display.length - 1);
+        input.value = display;
+    }
+    else if(calc.length === 0) {
+        input.value = "";
+    }
+})
 
 
 equal.addEventListener("click", () => {
     if (calc.length != 0){
-        let num2 = number;
-        number = 0;
+        let num2 = parseFloat(display);
         let ope = calc[calc.length - 1];
         calc.pop();
         let num1 = calc[calc.length - 1];
@@ -118,14 +135,14 @@ equal.addEventListener("click", () => {
                             display = "Error"
                         }
                         else{
-                            display = (num1 / num2);
+                            display = ((num1 / num2).toFixed(3));
                         }
                         break;
             case "%": if (num2 === 0){
                         display = "Error"
                       }
                       else{
-                          display = (num1 % num2);
+                          display = (num1 % num2).toFixed(3);
                       }
         }
         input.value = display;
@@ -136,6 +153,7 @@ equal.addEventListener("click", () => {
         display = "";
         input.value = "Error";
     }
+    decimal = false;
 });
 
 
